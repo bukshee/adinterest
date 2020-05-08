@@ -1,2 +1,2 @@
 # adinterest
-Processing an anonomized FB stat
+Processing anonomized Facebook data for statistical purposes.
