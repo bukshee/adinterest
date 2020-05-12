@@ -2,6 +2,7 @@ package bitfield
 
 import (
 	"errors"
+	"math"
 	"math/bits"
 )
 
@@ -12,17 +13,28 @@ type BitField struct {
 }
 
 // New returns a zeroed (all false) bit-field that can store size elements
-func New(size int) BitField {
+// can accept initializing arguments
+func New(size int, vals ...int) *BitField {
 	var bf BitField
 	bf.size = size
 	count := (size + 64) / 64
 	bf.data = make([]uint64, count)
-	return bf
+	for _, v := range vals {
+		bf.Set(v)
+	}
+	return &bf
+}
+
+// Copy creates a copy of our BitField
+func (bf BitField) Copy(dest *BitField) {
+	dest.size = bf.size
+	dest.data = make([]uint64, len(bf.data))
+	copy(dest.data, bf.data)
 }
 
 func (bf BitField) posVerify(pos int) error {
 	if pos < 0 || pos > bf.size {
-		return errors.New("Wrong position")
+		return errors.New("wrong position")
 	}
 	return nil
 }
@@ -45,6 +57,13 @@ func (bf BitField) Set(pos int) error {
 	}
 	bf.data[index] |= (1 << uint64(offset))
 	return nil
+}
+
+// SetAll sets all bits to 1
+func (bf BitField) SetAll() {
+	for i := 0; i < len(bf.data); i++ {
+		bf.data[i] = math.MaxUint64
+	}
 }
 
 // Clear clears the bit at position pos (sets to 0) inside the bit-field
@@ -79,4 +98,30 @@ func (bf BitField) OnesCount() int {
 		count += bits.OnesCount64(bf.data[i])
 	}
 	return count
+}
+
+// And ANDs a bitfield to this one and returns the result as a new bitfield
+func (bf BitField) And(bfOther *BitField) (*BitField, error) {
+	if bf.Size() != bfOther.Size() {
+		return &BitField{}, errors.New("the size of the bitfields must match")
+	}
+	res := &BitField{}
+	bf.Copy(res)
+	for i := 0; i < len(res.data); i++ {
+		res.data[i] &= bfOther.data[i]
+	}
+	return res, nil
+}
+
+// Equal tells if two bitfields are equal or not
+func (bf BitField) Equal(bfOther *BitField) bool {
+	if bf.Size() != bfOther.Size() {
+		return false
+	}
+	for i := 0; i < len(bf.data); i++ {
+		if bf.data[i] != bfOther.data[i] {
+			return false
+		}
+	}
+	return true
 }
