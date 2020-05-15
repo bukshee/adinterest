@@ -40,6 +40,11 @@ func (bf64 BitField64) SetAll() BitField64 {
 	return math.MaxUint64
 }
 
+// ClearAll returns a bitfield where all 64 bits are set
+func (bf64 BitField64) ClearAll() BitField64 {
+	return BitField64(0)
+}
+
 // And returns the binary AND of the two bitfields
 func (bf64 BitField64) And(bfo BitField64) BitField64 {
 	return bf64 & bfo

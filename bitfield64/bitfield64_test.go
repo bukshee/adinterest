@@ -26,4 +26,8 @@ func Test1(t *testing.T) {
 	if bf2.And(bf1).OnesCount() != 2 {
 		t.Error("should be 2")
 	}
+
+	if New().SetAll().ClearAll().OnesCount() != 0 {
+		t.Error("should be zero")
+	}
 }
