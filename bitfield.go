@@ -1,11 +1,13 @@
-// Package bitfield is slice of bitfield64-s to make it possible to store more
-// than 64 bits. Most functions are chainable
+/*
+Package bitfield is slice of bitfield64-s to make it possible to store more
+than 64 bits. Most functions are chainable
+*/
 package bitfield
 
 import (
 	"errors"
 
-	bf64 "./bitfield64"
+	bf64 "github.com/bukshee/bitfield64"
 )
 
 // BitField is a slice of BitField64-s.
