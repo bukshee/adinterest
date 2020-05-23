@@ -5,61 +5,71 @@ import (
 )
 
 func Test1(t *testing.T) {
-	bf := New(200)
-	bf.Set(1).Set(3).Set(65).Clear(171)
-	if (*bf)[0] != 10 {
-		t.Error("should be 10")
+	if New(0) != nil || New(-2) != nil {
+		t.Error("should be nil")
 	}
-	if bf.OnesCount() != 3 {
-		t.Error("should be 3")
+	if New(65).SetAll().OnesCount() != 65 {
+		t.Error("should be 65")
 	}
-}
-
-/*func Test1(t *testing.T) {
-	bf := New(5, 0, 2)
-	bf.Clear(4)
+	if New(3).Equal(New(4)) {
+		t.Error("should be false")
+	}
+	if New(3).Set(0).Set(-1).Not().OnesCount() != 1 {
+		t.Error("should be 1")
+	}
+	bf := New(129).Set(0).Set(-1).Clear(123).Clear(-3).Not().Not()
 	if bf.OnesCount() != 2 {
-		t.Error("Should return 2")
+		t.Error("should be 2")
 	}
-	val, _ := bf.Get(2)
-	if val != true {
-		t.Error("Should be true")
+	if !bf.Get(0) || !bf.Get(-bf.Len()) || !bf.Get(bf.Len()) {
+		t.Error("should be true")
 	}
-	val, _ = bf.Get(3)
-	if val != false {
-		t.Error("Should be false")
+	if bf.And(New(129).Set(0).Set(1)).OnesCount() != 1 {
+		t.Error("should be 1")
 	}
 
-	bf = New(180, 110, 113, 11)
-	bf.Set(2)
-	bf.Clear(2)
-	if bf.OnesCount() != 3 {
-		t.Error("Should be 3")
+	if bf.And(New(121)).OnesCount() != 1 {
+		t.Error("should be 1")
 	}
-}
+	if bf.Or(New(121)).OnesCount() != 1 {
+		t.Error("should be 1")
+	}
+	if bf.Xor(New(121)).OnesCount() != 1 {
+		t.Error("should be 1")
+	}
 
-func Test2(t *testing.T) {
-	bf1 := New(11)
-	bf2 := New(12)
-	res, err := bf1.And(bf2)
-	if err == nil {
-		t.Error("Should be false")
+	bf.Set(73).Set(-2).ClearAll().Set(-1)
+	if !bf.Equal(New(129).Set(128)) {
+		t.Error("should be equal")
 	}
-	bf2 = New(11, 1, 10)
-	bf1.Set(1)
-	bf1.Set(7)
-	res, err = bf1.And(bf2)
-	if err != nil || res.OnesCount() != 1 {
-		t.Error("Should be 1")
+	if bf.Equal(New(129).Not()) {
+		t.Error("should be not equal")
 	}
-	bf2.Set(7)
-	res, err = bf1.And(bf2)
-	if err != nil || !res.Equal(bf1) {
-		t.Error("Should be 2")
+	if bf.Get(127) {
+		t.Error("should be false")
 	}
-	bf2.Clear(10)
-	if !bf2.Equal(bf1) {
-		t.Error("Should be equal")
+	if !bf.Get(-1) {
+		t.Error("should be true")
 	}
+
+	if !New(4).Flip(-1).Equal(New(4).Set(-1)) {
+		t.Error("should be equal")
+	}
+	if !New(4).Flip(-1).Flip(-1).Equal(New(4)) {
+		t.Error("should be equal")
+	}
+
+	bf2 := bf.Copy()
+	if !bf.Equal(bf2) || bf.OnesCount() != bf2.OnesCount() || bf.Len() != bf2.Len() {
+		t.Error("should be equal")
+	}
+	if bf2.Xor(bf2).OnesCount() != 0 {
+		t.Error("should be 0")
+	}
+
+	bf2 = bf.Copy()
+	if !bf2.Set(11).Or(bf).Get(11) {
+		t.Error("should be true")
+	}
+
 }
-*/
