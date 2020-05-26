@@ -31,6 +31,31 @@ func New(len int) *BitField {
 	return &ret
 }
 
+func (bf *BitField) clearBeyondLen() {
+	index, offset := bf.Len()/64, bf.Len()%64
+	for i := offset; i < 64; i++ {
+		bf.data[index] = bf.data[index].Clear(i)
+	}
+}
+
+// Resize resizes the bitfield to newLen in size. If newLen is less than Len(),
+// bits are lost at the end, if it is bigger, the new bits will be zeroed.
+// If newLen<=0 nothing changes
+func (bf *BitField) Resize(newLen int) *BitField {
+	if newLen <= 0 {
+		return bf
+	}
+	ret := New(newLen)
+	copy(ret.data, bf.data)
+	if newLen >= bf.len {
+		return ret
+	}
+	ret.clearBeyondLen()
+	bf.data = ret.data
+	bf.len = ret.len
+	return bf
+}
+
 // Len returns the number of bits the BitField holds
 func (bf *BitField) Len() int {
 	return bf.len
@@ -173,4 +198,14 @@ func (bf *BitField) Copy() *BitField {
 	}
 	copy(bfNew.data, bf.data)
 	return &bfNew
+}
+
+// BitCopy copies the content of the bitfield to dest.
+// Returns false if Len()-s differ, true otherwise.
+func (bf *BitField) BitCopy(dest *BitField) bool {
+	if bf.Len() != dest.Len() {
+		return false
+	}
+	copy(dest.data, bf.data)
+	return true
 }

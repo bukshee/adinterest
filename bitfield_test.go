@@ -71,5 +71,32 @@ func Test1(t *testing.T) {
 	if !bf2.Set(11).Or(bf).Get(11) {
 		t.Error("should be true")
 	}
+}
 
+func Test2(t *testing.T) {
+	if !New(27).Set(0).Set(-1).Resize(65).Get(26) {
+		t.Error("should be true")
+	}
+	if New(65).Set(-1).Resize(45).OnesCount() != 0 {
+		t.Error("should be 0")
+	}
+	if New(65).SetAll().Resize(40).OnesCount() != 40 {
+		t.Error("should be 40")
+	}
+	dest := New(65).Set(4).Resize(0)
+	if dest.OnesCount() != 1 || !dest.Get(4) {
+		t.Error("should be the same bitfield")
+	}
+
+	dest = New(44)
+	if New(65).BitCopy(dest) {
+		t.Error("should be false")
+	}
+	dest = New(65)
+	if !New(65).Set(-1).BitCopy(dest) {
+		t.Error("should be true")
+	}
+	if !dest.Get(64) || dest.OnesCount() != 1 {
+		t.Error("not exact BitCopy")
+	}
 }
