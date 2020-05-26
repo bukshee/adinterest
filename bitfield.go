@@ -190,14 +190,19 @@ func (bf *BitField) Equal(bfOther *BitField) bool {
 	return true
 }
 
-// Copy returns a copy of the bitfield or nil if copy failed
-func (bf *BitField) Copy() *BitField {
+// Clone creates a copy of the bitfield and returns it
+func (bf *BitField) Clone() *BitField {
 	bfNew := BitField{
 		data: make(bitFieldData, len(bf.data), cap(bf.data)),
 		len:  bf.len,
 	}
 	copy(bfNew.data, bf.data)
 	return &bfNew
+}
+
+// Copy deprecated, use Clone instead: just a rename
+func (bf *BitField) Copy() *BitField {
+	return bf.Clone()
 }
 
 // BitCopy copies the content of the bitfield to dest.

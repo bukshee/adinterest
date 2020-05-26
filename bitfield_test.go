@@ -59,7 +59,7 @@ func Test1(t *testing.T) {
 		t.Error("should be equal")
 	}
 
-	bf2 := bf.Copy()
+	bf2 := bf.Clone()
 	if !bf.Equal(bf2) || bf.OnesCount() != bf2.OnesCount() || bf.Len() != bf2.Len() {
 		t.Error("should be equal")
 	}
@@ -67,7 +67,7 @@ func Test1(t *testing.T) {
 		t.Error("should be 0")
 	}
 
-	bf2 = bf.Copy()
+	bf2 = bf.Clone()
 	if !bf2.Set(11).Or(bf).Get(11) {
 		t.Error("should be true")
 	}
