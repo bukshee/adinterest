@@ -103,32 +103,34 @@ func Test2(t *testing.T) {
 
 func TestPrivate1(t *testing.T) {
 	want := [...][2]int{
-		{67, -2}, {121, 121}, {3, -10}, {0, 2},
+		{67, -2}, {121, 121}, {3, -10}, {0, 2}, {0, 4},
 	}
 	need := [...]int{
-		65, 0, 2, 0,
+		65, 0, 2, 0, 0,
 	}
 
 	for i, w := range want {
-		if New(w[0]).posNormalize(w[1]) == need[i] {
+		res := New(w[0]).posNormalize(w[1])
+		if res == need[i] {
 			continue
 		}
-		t.Errorf("[%d,%d] should map to %d", w[0], w[1], need[i])
+		t.Errorf("New(%d).posNormalize(%d) should map to %d. Got: %d", w[0], w[1], need[i], res)
 	}
 }
 
 func TestPrivate2(t *testing.T) {
 	want := [...][2]int{
-		{65, 64}, {3, -1},
+		{65, 64}, {3, -1}, {65, -1},
 	}
 	need := [...][2]int{
-		{1, 0}, {0, 2},
+		{1, 0}, {0, 2}, {1, 0},
 	}
 	for i, w := range want {
 		ix, p := New(w[0]).posToOffset(w[1])
 		if ix == need[i][0] && p == need[i][1] {
 			continue
 		}
-		t.Errorf("[%d,%d] should map to [%d,%d]", w[0], w[1], need[i][0], need[i][1])
+		t.Errorf("New(%d).posToOffset(%d) should map to [%d,%d]. Got: [%d,%d]",
+			w[0], w[1], need[i][0], need[i][1], ix, p)
 	}
 }

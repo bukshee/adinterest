@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mid
 - Append
 
+## Changed
+- New: in case len<=0 it no longer returns nil. It returns a Len(0) BitField.
+- bumped up bitfield64 version number
+
 ## Deprecated
 - Copy: this method will be renamed to Clone for added clarity.
 
