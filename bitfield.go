@@ -98,6 +98,14 @@ func (bf *BitField) Set(pos int) *BitField {
 	return bf
 }
 
+// SetMul sets multiple bits at once
+func (bf *BitField) SetMul(pos ...int) *BitField {
+	for _, p := range pos {
+		bf.Set(p)
+	}
+	return bf
+}
+
 // SetAll sets all bits to 1
 func (bf *BitField) SetAll() *BitField {
 	for i := range bf.data {
@@ -110,6 +118,14 @@ func (bf *BitField) SetAll() *BitField {
 func (bf *BitField) Clear(pos int) *BitField {
 	index, offset := bf.posToOffset(pos)
 	bf.data[index] = bf.data[index].Clear(offset)
+	return bf
+}
+
+// ClearMul clears multiple bits at once
+func (bf *BitField) ClearMul(pos ...int) *BitField {
+	for _, p := range pos {
+		bf.Clear(p)
+	}
 	return bf
 }
 

@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Right
 - Mid
 - Append
+- SetMul
+- ClearMul
 
 ## Changed
 - New: in case len<=0 it no longer returns nil. It returns a Len(0) BitField.

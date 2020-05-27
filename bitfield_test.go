@@ -17,7 +17,7 @@ func Test1(t *testing.T) {
 	if New(3).Set(0).Set(-1).Not().OnesCount() != 1 {
 		t.Error("should be 1")
 	}
-	bf := New(129).Set(0).Set(-1).Clear(123).Clear(-3).Not().Not()
+	bf := New(129).SetMul(0, -1).ClearMul(123, -3).Not().Not()
 	if bf.OnesCount() != 2 {
 		t.Error("should be 2")
 	}
@@ -74,7 +74,7 @@ func Test1(t *testing.T) {
 }
 
 func Test2(t *testing.T) {
-	if !New(27).Set(0).Set(-1).Resize(65).Get(26) {
+	if !New(27).SetMul(0, -1).Resize(65).Get(26) {
 		t.Error("should be true")
 	}
 	if New(65).Set(-1).Resize(45).OnesCount() != 0 {
