@@ -5,8 +5,8 @@ import (
 )
 
 func Test1(t *testing.T) {
-	if New(0) != nil || New(-2) != nil {
-		t.Error("should be nil")
+	if New(0).Len() != 0 || New(-2).Len() != 0 {
+		t.Error("should be 0")
 	}
 	if New(65).SetAll().OnesCount() != 65 {
 		t.Error("should be 65")
@@ -98,5 +98,37 @@ func Test2(t *testing.T) {
 	}
 	if !dest.Get(64) || dest.OnesCount() != 1 {
 		t.Error("not exact BitCopy")
+	}
+}
+
+func TestPrivate1(t *testing.T) {
+	want := [...][2]int{
+		{67, -2}, {121, 121}, {3, -10}, {0, 2},
+	}
+	need := [...]int{
+		65, 0, 2, 0,
+	}
+
+	for i, w := range want {
+		if New(w[0]).posNormalize(w[1]) == need[i] {
+			continue
+		}
+		t.Errorf("[%d,%d] should map to %d", w[0], w[1], need[i])
+	}
+}
+
+func TestPrivate2(t *testing.T) {
+	want := [...][2]int{
+		{65, 64}, {3, -1},
+	}
+	need := [...][2]int{
+		{1, 0}, {0, 2},
+	}
+	for i, w := range want {
+		ix, p := New(w[0]).posToOffset(w[1])
+		if ix == need[i][0] && p == need[i][1] {
+			continue
+		}
+		t.Errorf("[%d,%d] should map to [%d,%d]", w[0], w[1], need[i][0], need[i][1])
 	}
 }

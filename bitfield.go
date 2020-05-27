@@ -21,8 +21,7 @@ type BitField struct {
 // New creates a slice of BitField64 and returns it. Returns nil if len<=0
 func New(len int) *BitField {
 	if len <= 0 {
-		// we avoid returning error in order to be chainable
-		return nil
+		len = 0
 	}
 	ret := BitField{
 		data: make(bitFieldData, 1+len/64),
@@ -61,11 +60,19 @@ func (bf *BitField) Len() int {
 	return bf.len
 }
 
-func (bf *BitField) posToOffset(pos int) (index int, offset int) {
+func (bf *BitField) posNormalize(pos int) int {
+	if bf.len == 0 {
+		return 0
+	}
 	for pos < 0 {
 		pos += bf.len
 	}
 	pos %= bf.len
+	return pos
+}
+
+func (bf *BitField) posToOffset(pos int) (index int, offset int) {
+	pos = bf.posNormalize(pos)
 	index = pos / 64
 	offset = pos % 64
 	return index, offset
