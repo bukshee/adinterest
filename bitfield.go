@@ -30,29 +30,20 @@ func New(len int) *BitField {
 	return &ret
 }
 
-func (bf *BitField) clearBeyondLen() {
-	index, offset := bf.Len()/64, bf.Len()%64
-	for i := offset; i < 64; i++ {
-		bf.data[index] = bf.data[index].Clear(i)
-	}
-}
-
-// Resize resizes the bitfield to newLen in size. If newLen is less than Len(),
-// bits are lost at the end, if it is bigger, the new bits will be zeroed.
-// If newLen<=0 nothing changes
+// Resize resizes the bitfield to newLen in size.
+// Returns a newly allocated one, leaves the original intact.
+// If newLen < Len() bits are lost at the end.
+// If newLen > Len() the newly added bits will be zeroed.
 func (bf *BitField) Resize(newLen int) *BitField {
-	if newLen <= 0 {
-		return bf
+	if newLen < 0 {
+		newLen = 0
 	}
 	ret := New(newLen)
 	copy(ret.data, bf.data)
-	if newLen >= bf.len {
-		return ret
+	if newLen < bf.len {
+		ret.clearEnd()
 	}
-	ret.clearBeyondLen()
-	bf.data = ret.data
-	bf.len = ret.len
-	return bf
+	return ret
 }
 
 // Len returns the number of bits the BitField holds
@@ -83,9 +74,10 @@ func (bf *BitField) posToOffset(pos int) (index int, offset int) {
 // the space allocated: it needs to be kept zeroed at all times to be
 // consistent
 func (bf *BitField) clearEnd() *BitField {
-	index, offset := bf.posToOffset(bf.Len() - 1)
+	const n = 64
+	index, offset := bf.Len()/n, bf.Len()%n
 	// point to after the last element:
-	for i := offset + 1; i < 64; i++ {
+	for i := offset; i < n; i++ {
 		bf.data[index] = bf.data[index].Clear(i)
 	}
 	return bf
@@ -236,4 +228,87 @@ func (bf *BitField) BitCopy(dest *BitField) bool {
 	}
 	copy(dest.data, bf.data)
 	return true
+}
+
+// Shift shifts the bitfield by count bits in place and returns it.
+// If count is positive it shifts towards higher bit positions;
+// If negative it shifts towards lower bit positions.
+// Bits exiting at one end are discarded;
+// bits entering at the other end are zeroed.
+func (bf *BitField) Shift(count int) *BitField {
+	if count == 0 {
+		return bf
+	}
+	if count <= -bf.Len() || count >= bf.Len() {
+		return bf.ClearAll()
+	}
+
+	const n = 64
+	if count > 0 {
+		ix, delta := count/n, count%n
+		for i := len(bf.data) - 1; i >= 0; i-- {
+			tmp := bf64.New()
+			if i-ix >= 0 {
+				tmp = bf.data[i-ix]
+			}
+			a, b := tmp.Shift2(delta)
+			bf.data[i] = a
+			if i+1 < len(bf.data) {
+				bf.data[i+1] = bf.data[i+1].Or(b)
+			}
+		}
+		bf.clearEnd()
+	}
+	if count < 0 {
+		ix, delta := -count/n, -count%n
+		for i := 0; i < len(bf.data); i++ {
+			tmp := bf64.New()
+			if i+ix < len(bf.data) {
+				tmp = bf.data[i+ix]
+			}
+			a, b := tmp.Shift2(-delta)
+			bf.data[i] = a
+			if i > 0 {
+				bf.data[i-1] = bf.data[i-1].Or(b)
+			}
+		}
+	}
+	return bf
+}
+
+// Mid returns counts bits from position pos as a new BitField
+func (bf *BitField) Mid(pos, count int) *BitField {
+	pos = bf.posNormalize(pos)
+	if count < 0 {
+		count = 0
+	}
+	return bf.Clone().Shift(-pos).Resize(count)
+}
+
+// Left returns count bits in the range of [0,count-1] as a new BitField
+func (bf *BitField) Left(count int) *BitField {
+	if count > bf.Len() {
+		count = bf.Len()
+	}
+	return bf.Mid(0, count)
+}
+
+// Right returns count bits in the range of [63-count,63] as a new BitField
+func (bf *BitField) Right(count int) *BitField {
+	if count > bf.Len() {
+		count = bf.Len()
+	}
+	return bf.Mid(bf.Len()-count, count)
+}
+
+// Append appends 'other' BitField to the end
+// A newly created bitfield will be returned
+func (bf *BitField) Append(other *BitField) *BitField {
+	if other.Len() == 0 {
+		return bf.Clone()
+	}
+	len := bf.Len()
+	newLen := len + other.Len()
+	ret := other.Resize(newLen).Shift(len)
+	return ret.Or(bf.Resize(newLen))
 }
