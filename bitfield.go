@@ -66,7 +66,7 @@ func (bf *BitField) posToOffset(pos int) (index int, offset int) {
 	pos = bf.posNormalize(pos)
 	index = pos / 64
 	offset = pos % 64
-	return index, offset
+	return
 }
 
 // clearEnd zeroes the bits beyond Len(): the underlying BitField64
@@ -151,7 +151,8 @@ func (bf *BitField) OnesCount() int {
 	return count
 }
 
-// And does a binary AND with bfOther. Modifies the bitfield in place and returns it.
+// And does a binary AND with bfOther.
+// Modifies the bitfield in place and returns it.
 func (bf *BitField) And(bfOther *BitField) *BitField {
 	if bf.len != bfOther.len {
 		return bf
@@ -162,7 +163,8 @@ func (bf *BitField) And(bfOther *BitField) *BitField {
 	return bf
 }
 
-// Or does a binary OR with bfOther. Modifies the bitfield in place and returns it.
+// Or does a binary OR with bfOther.
+// Modifies the bitfield in place and returns it.
 func (bf *BitField) Or(bfOther *BitField) *BitField {
 	if bf.len != bfOther.len {
 		return bf
@@ -173,7 +175,8 @@ func (bf *BitField) Or(bfOther *BitField) *BitField {
 	return bf
 }
 
-// Not does a binary NOT (inverts all bits). Modifies the bitfield in place and returns it.
+// Not does a binary NOT (inverts all bits).
+// Modifies the bitfield in place and returns it.
 func (bf *BitField) Not() *BitField {
 	for i := range bf.data {
 		bf.data[i] = bf.data[i].Not()
@@ -181,7 +184,8 @@ func (bf *BitField) Not() *BitField {
 	return bf.clearEnd()
 }
 
-// Xor does a binary XOR with bfOther. Modifies the bitfield in place and returns it.
+// Xor does a binary XOR with bfOther.
+// Modifies the bitfield in place and returns it.
 func (bf *BitField) Xor(bfOther *BitField) *BitField {
 	if bf.len != bfOther.len {
 		return bf
@@ -311,4 +315,24 @@ func (bf *BitField) Append(other *BitField) *BitField {
 	newLen := len + other.Len()
 	ret := other.Resize(newLen).Shift(len)
 	return ret.Or(bf.Resize(newLen))
+}
+
+// Rotate rotates by amount bits in-place.
+// Returns the rotated bitfield for easy chaining.
+// If amount>0 it rotates towards higher bit positions,
+// otherwise it rotates towards lower bit positions.
+func (bf *BitField) Rotate(amount int) *BitField {
+	for amount < bf.Len() {
+		amount += bf.Len()
+	}
+	amount %= bf.Len()
+
+	if amount%bf.Len() == 0 {
+		return bf
+	}
+
+	lh := bf.Left(bf.Len() - amount)
+	rh := bf.Right(amount)
+	rh.Append(lh).BitCopy(bf)
+	return bf
 }

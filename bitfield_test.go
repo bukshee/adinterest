@@ -198,3 +198,25 @@ func TestAppend(t *testing.T) {
 		t.Error("Append is wrong")
 	}
 }
+
+func TestRotate(t *testing.T) {
+
+	a := New(65).Set(63).Rotate(1)
+	if !a.Equal(New(65).Set(64)) {
+		t.Error("should be equal")
+	}
+
+	a = New(65).Set(0).Rotate(-1)
+	if !a.Equal(New(65).Set(64)) {
+		t.Error("should be equal")
+	}
+
+	const len = 163
+	a = New(len).Set(0)
+	for i := -len * 2; i < len*2; i++ {
+		r := a.Clone().Rotate(i)
+		if !r.Equal(New(len).Set(i)) {
+			t.Errorf("@%d rotate failed", i)
+		}
+	}
+}
