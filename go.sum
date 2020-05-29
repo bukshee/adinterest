@@ -1,4 +1,4 @@
-github.com/bukshee/bitfield v1.0.0 h1:kPw9Ky9By3uy8w3yvMkHpB1S+9b5UQRjPxTtfoXZp+w=
-github.com/bukshee/bitfield v1.0.0/go.mod h1:iBwt3sNjHFggARaQUKdvGmFAdg1kXNd+XNtA1maNncg=
-github.com/bukshee/bitfield64 v1.1.0 h1:/Vdxkyf2NlDsrJzmfzxFx+SUc9FhRLI8QqnmGRkfWfE=
-github.com/bukshee/bitfield64 v1.1.0/go.mod h1:FUWSM4ziNVj68nJZXBpO9mhHkVY2ShbdZ7NR7BVO4RI=
+github.com/bukshee/bitfield v1.1.0 h1:qfOx6qbFX5A5MlIlcuFegcFT7WxM74omS1F27NBovaI=
+github.com/bukshee/bitfield v1.1.0/go.mod h1:kSX06MkeUFapmCvIxbRM1wNb0LM3prhIrrcqpLUb/NM=
+github.com/bukshee/bitfield64 v1.3.0 h1:x42/qJ6mTAup4fBMcUJbZe18UpV48JDI8wqXy32glfg=
+github.com/bukshee/bitfield64 v1.3.0/go.mod h1:FUWSM4ziNVj68nJZXBpO9mhHkVY2ShbdZ7NR7BVO4RI=
