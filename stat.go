@@ -33,30 +33,6 @@ type interestList struct {
 	hits int
 }
 
-var (
-	minCluster = 10
-	maxCluster = 50
-	chResult   = make(chan interestList)
-	chStop     = make(chan bool)
-)
-
-func inRange(count int) bool {
-	if count < minCluster || count > maxCluster {
-		return false
-	}
-	return true
-}
-
-func shouldStop() bool {
-	return false
-	/*select {
-	case <-chStop:
-		return true
-	default:
-		return false
-	}*/
-}
-
 /*func displayResults() {
 	linesWritten := 0
 	for {
@@ -77,28 +53,7 @@ func shouldStop() bool {
 	}
 
 }
-
-func subSet(ints1, ints2 *interestList) bool {
-	l1 := len(ints1.list)
-	l2 := len(ints2.list)
-	if l2 >= l1 {
-		return false
-	}
-	hasIt := func(iID interestID) bool {
-		for i := 0; i < len(ints1.list); i++ {
-			if ints1.list[i] == iID {
-				return true
-			}
-		}
-		return false
-	}
-	for i := 0; i < l2; i++ {
-		if !hasIt(ints2.list[i]) {
-			return false
-		}
-	}
-	return true
-}*/
+*/
 
 func fileLoad(fname string, idata *Idata) error {
 	f, err := os.Open(fname)
