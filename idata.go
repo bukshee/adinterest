@@ -106,22 +106,23 @@ func (id *Idata) ignorePeople() int {
 	pIDs := make([]personID, 0, len(id.pToID))
 	for i := 0; i < len(id.pToID); i++ {
 		pID := personID(i)
-		ints := bitfield.New(len(id.toID))
+		ints := make([]int, 0, 10)
 		for _, row := range id.rows {
 			if row.pID != pID {
 				continue
 			}
-			ints.Set(int(row.iID))
+			ints = append(ints, int(row.iID))
 		}
 		pIDs = append(pIDs, pID)
-		pers[pID] = ints
+		pers[pID] = bitfield.New(len(id.toID)).Set(ints...)
 	}
 	// find people we want to ignore
+	bf := bitfield.New(len(id.toID)).Mut()
 	for i, pID := range pIDs {
 		for _, pID2 := range pIDs[i+1:] {
-			tmp := pers[pID].Clone().Xor(pers[pID2])
+			pers[pID].Copy(bf)
 			// if two people differ only in <3 interests => ignore one of them
-			if tmp.OnesCount() < 1 {
+			if bf.Xor(pers[pID2]).OnesCount() < 1 {
 				id.pIgnore[pID2] = struct{}{}
 			}
 		}
@@ -134,7 +135,7 @@ func (id *Idata) ignoreInterests() {
 	iIDs := make([]interestID, 0, len(id.toID))
 	for i := 0; i < len(id.toID); i++ {
 		iID := interestID(i)
-		people := bitfield.New(len(id.pToID))
+		people := make([]int, 0, 50)
 		for _, row := range id.rows {
 			if row.iID != iID {
 				continue
@@ -143,13 +144,14 @@ func (id *Idata) ignoreInterests() {
 			if _, ok := id.pIgnore[row.pID]; ok {
 				continue
 			}
-			people.Set(int(row.pID))
+			people = append(people, int(row.pID))
 		}
 		iIDs = append(iIDs, iID)
-		id.iFieldMap[iID] = people
+		id.iFieldMap[iID] = bitfield.New(len(id.pToID)).Mut().Set(people...)
 	}
 	id.rows = nil
 
+	bf := bitfield.New(len(id.pToID)).Mut()
 	// find interests we want to ignore
 	for i, iID := range iIDs {
 		// ignore interest with less than 10 or more than 50 people in it
@@ -159,9 +161,9 @@ func (id *Idata) ignoreInterests() {
 			continue
 		}
 		for _, iID2 := range iIDs[i+1:] {
-			tmp := id.iFieldMap[iID].Clone().Xor(id.iFieldMap[iID2])
+			id.iFieldMap[iID].Copy(bf)
 			// ignore interests where two interest overlap with <3 people difference
-			if tmp.OnesCount() < 1 {
+			if bf.Xor(id.iFieldMap[iID2]).OnesCount() < 1 {
 				id.iIgnore[iID2] = struct{}{}
 			}
 		}

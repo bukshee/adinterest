@@ -66,17 +66,19 @@ func main() {
 		Usage(err.Error())
 		os.Exit(1)
 	}
-	/*cpuProfile, _ := os.Create("cpuprofile")
-	memProfile, _ := os.Create("memprofile")
-	pprof.StartCPUProfile(cpuProfile)*/
+	// cpuProfile, _ := os.Create("cpuprofile")
+	// memProfile, _ := os.Create("memprofile")
+	// pprof.StartCPUProfile(cpuProfile)
+
 	err = fileLoad(fname, idata)
 	if err != nil {
 		Usage(err.Error())
 		os.Exit(2)
 	}
 	idata.GenResult()
-	//pprof.StopCPUProfile()
-	//pprof.WriteHeapProfile(memProfile)
+
+	// pprof.StopCPUProfile()
+	// pprof.WriteHeapProfile(memProfile)
 
 	fmt.Print("numPeople\tnumInterestInSet\tinterests\n")
 	if idata.NumResults() == 0 {
