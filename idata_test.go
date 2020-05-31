@@ -3,9 +3,12 @@ package main
 import "testing"
 
 func Test1(t *testing.T) {
-	idata := NewIdata()
-	idata.iMin = 0
-	err := fileLoad("testdata/interests1.tsv", idata)
+	idata, err := NewIdata(11, 50, 10)
+	if err == nil {
+		t.Error("should return an error")
+	}
+	idata, err = NewIdata(0, 50, 1)
+	err = fileLoad("testdata/interests1.tsv", idata)
 	if err != nil {
 		t.Errorf("fileLoad failed: %v", err)
 	}
@@ -27,6 +30,12 @@ func Test1(t *testing.T) {
 				t.Error("bats or animals allowed")
 			}
 		}
+	}
+
+	idata.groupInterests()
+	num := idata.NumResults()
+	if num != 2 {
+		t.Error("should be 2")
 	}
 	return
 }
