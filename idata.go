@@ -12,7 +12,7 @@ A result is a set of interests along with the number of people in it.
 import (
 	"errors"
 
-	"github.com/bukshee/bitfield"
+	"github.com/bukshee/bitfield/v2"
 )
 
 type interestID int
